@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { FileSpreadsheet, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import {
   motion,
   AnimatePresence,
@@ -79,10 +79,25 @@ export const Navbar = () => {
         {/* Logo */}
         <Link
           href="/"
-          className="relative z-20 flex items-center gap-2 px-2 py-1 text-sm font-normal"
+          className="relative z-20 flex items-center gap-2 px-2 py-1 text-sm font-normal group"
         >
-          <FileSpreadsheet className="w-6 h-6 text-gray-900 dark:text-gray-100 group-hover:text-blue-500 group-hover:rotate-12 transition-all duration-300 ease-out" />
-          <span className="font-extrabold text-xl bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 group-hover:from-blue-600 group-hover:to-blue-400 transition-all duration-300">
+          <span className="relative w-8 h-8 flex items-center">
+            <img
+              src="/cvnext-black.png"
+              alt="CVNext Logo"
+              className="block dark:hidden w-8 h-8 object-contain"
+              width={32}
+              height={32}
+            />
+            <img
+              src="/cvnext-white.png"
+              alt="CVNext Logo"
+              className="hidden dark:block w-8 h-8 object-contain"
+              width={32}
+              height={32}
+            />
+          </span>
+          <span className="font-extrabold text-xl bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400">
             CVNext
           </span>
         </Link>
@@ -169,7 +184,22 @@ export const Navbar = () => {
             href="/"
             className="relative z-20 flex items-center gap-2 px-2 py-1 text-sm font-normal group"
           >
-            <FileSpreadsheet className="w-6 h-6 text-gray-900 dark:text-gray-100 transition-all duration-300 ease-out" />
+            <span className="relative w-8 h-8 flex items-center">
+              <img
+                src="/cvnext-black.png"
+                alt="CVNext Logo"
+                className="block dark:hidden w-8 h-8 object-contain"
+                width={32}
+                height={32}
+              />
+              <img
+                src="/cvnext-white.png"
+                alt="CVNext Logo"
+                className="hidden dark:block w-8 h-8 object-contain"
+                width={32}
+                height={32}
+              />
+            </span>
             <span className="font-extrabold text-xl bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400">
               CVNext
             </span>

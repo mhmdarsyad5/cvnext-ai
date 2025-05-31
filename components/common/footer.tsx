@@ -19,8 +19,16 @@ export default function StackedCircularFooter() {
             href="/"
             className="relative z-20 flex items-center gap-2 px-2 py-1 text-sm font-normal mb-4"
           >
-            {" "}
-            <FileSpreadsheet className="w-6 h-6 text-gray-900 dark:text-gray-100 group-hover:text-blue-500 group-hover:rotate-12 transition-all duration-300 ease-out" />
+            <img
+              src="/cvnext-black.png"
+              alt="CVNext Logo"
+              className="w-8 h-8 block dark:hidden"
+            />
+            <img
+              src="/cvnext-white.png"
+              alt="CVNext Logo"
+              className="w-8 h-8 hidden dark:block"
+            />
             <span className="font-extrabold text-xl bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 group-hover:from-blue-600 group-hover:to-blue-400 transition-all duration-300">
               CVNext
             </span>
