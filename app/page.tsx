@@ -1,12 +1,19 @@
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import HeroSection from "@/components/home/hero-section";
+import BgGradient from "@/components/common/bg-gradient";
+import DemoSection from "@/components/home/demo-section";
+import { FaqSection } from "@/components/home/faq-section";
+import { ProfileSection } from "@/components/home/profile-section";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-(family-name:--font-geist-sans)">
-      <Button variant="outline">
-        Upload
-      </Button>
+    <div className="relative isolate">
+      <BgGradient />
+      <div className="relative z-10">
+        <HeroSection />
+        <DemoSection />
+        <FaqSection />
+        <ProfileSection />
+      </div>
     </div>
   );
 }
