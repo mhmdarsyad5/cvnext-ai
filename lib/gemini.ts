@@ -8,7 +8,7 @@ export const geminiModel = genAI.getGenerativeModel({
 
 export async function generatePdfReviewFromGemini(cvText: string) {
   try {
-    // First, get the name with clear instruction
+    // Step 1: Ekstrak Nama
     const namePrompt = `As a professional CV reviewer, extract the candidate's full name from this CV.
 Rules:
 - Return ONLY the full name, with proper capitalization
@@ -22,92 +22,91 @@ ${cvText}`;
     const nameResult = await geminiModel.generateContent(namePrompt);
     const ownerName = (await nameResult.response.text()).trim();
 
-    // Main analysis with structured scoring criteria
-    const prompt = `Bertindaklah sebagai penilai CV profesional senior dengan pengalaman luas di bidang HR dan rekrutmen. Tinjau CV berikut sesuai format terstruktur dan kriteria spesifik di bawah ini.
+    // Step 2: Prompt Analisis (VERSI KUAT & FINAL)
+    const prompt = `Anda adalah penilai CV profesional senior dengan pengalaman lebih dari 10 tahun di bidang HR, rekrutmen, dan pengembangan karier di Indonesia. Tugas Anda adalah menilai CV dengan format yang *Wajib Diikuti Secara Ketat*. Semua bagian yang diminta harus muncul dalam urutan dan format yang tepat, **tanpa terkecuali**.
 
-  ATURAN KRITIS:
-  1. Gunakan judul bagian persis seperti yang diberikan dalam [tanda kurung]
-  2. Evaluasi setiap poin secara sistematis
-  3. Berikan masukan yang spesifik dan dapat ditindaklanjuti
-  4. Skor harus dijumlah berdasarkan kriteria poin
-  5. Fokus pada standar profesional dan best-practice industri sesuai dengan keadaan indonesia saat ini
-  6. CV ATS-friendly sangat direkomendasikan
+🔒 PENTING — ATURAN WAJIB:
+- Gunakan judul bagian **persis** seperti di bawah ini (dengan tanda kurung [])
+- **Jangan ubah atau hilangkan judul bagian**
+- Jangan buat bagian tambahan
+- Gunakan bullet (•) dengan konsisten
+- Jawaban harus langsung ke poin, padat, dan profesional
+- Output harus sesuai dalam 1 kali generate. Jangan menunda atau menyimpan evaluasi.
+- Jika Anda tidak mengikuti format, hasil akan ditolak.
 
-  [Format dan Tata Letak] (30 poin)
-  • Hirarki visual dan keterbacaan (10 poin)
-  • Konsistensi format dan spasi (10 poin)
-  • Pemilihan font dan tata letak profesional (10 poin)
+🎯 STRUKTUR FORMAT YANG WAJIB DIGUNAKAN:
 
-  [Kualitas Konten] (35 poin)
-  • Relevansi dan dampak pengalaman (15 poin)
-  • Kesesuaian keterampilan dan kompetensi (10 poin)
-  • Evaluasi pencapaian (10 poin)
+[Format dan Tata Letak] (30 poin)
+• Hirarki visual dan keterbacaan (10 poin)  
+• Konsistensi format dan spasi (10 poin)  
+• Pemilihan font dan tata letak profesional (10 poin)  
 
-  [Cara Penyampaian] (35 poin)
-  • Penggunaan kata (15 poin)
-  • Penggunaan Bahasa yang jelas (20 poin)
+[Kualitas Konten] (35 poin)  
+• Relevansi dan dampak pengalaman (15 poin)  
+• Kesesuaian keterampilan dan kompetensi (10 poin)  
+• Evaluasi pencapaian (10 poin)  
 
-  [Saran Perbaikan]
-  • Perbaikan spesifik untuk area yang lemah
-  • Rekomendasi konten tambahan
-  • Saran optimalisasi format
-  • Prioritas peningkatan
+[Cara Penyampaian] (35 poin)  
+• Penggunaan kata (15 poin)  
+• Penggunaan Bahasa yang jelas (20 poin)  
 
-  [Kesimpulan]
-  • Kesan profesional secara keseluruhan
-  • 3 kekuatan utama CV
-  • 2 area kritis untuk perbaikan
-  • Skor Akhir: [Jumlah seluruh poin bagian]
-  • Skor: XX/100
+[Saran Perbaikan]  
+• Perbaikan spesifik untuk area yang lemah  
+• Rekomendasi konten tambahan  
+• Saran optimalisasi format  
+• Prioritas peningkatan  
 
-  Teks CV untuk DiReview:
-  ${cvText}`;
+[Kesimpulan]  
+• Kesan profesional secara keseluruhan  
+• 3 kekuatan utama CV  
+• 2 area kritis untuk perbaikan  
+• Skor Akhir: [Jumlah seluruh poin bagian]  
+• Skor: XX/100
 
-    try {
-      const result = await geminiModel.generateContent(prompt);
-      const response = await result.response;
-      const text = await response.text();
+📄 Tinjau CV berikut sesuai struktur di atas:
 
-      console.log("Gemini raw response:", text);
+${cvText}
 
-      if (!text) {
-        throw new Error("Empty response from Gemini");
-      }
+⚠️ Ingat: Format Wajib. Jika Anda tidak mengikuti struktur dengan seksama, hasil dianggap tidak valid.`;
 
-      // Validate format with stricter criteria
-      const requiredSections = [
-        "[Format dan Tata Letak]",
-        "[Kualitas Konten]",
-        "[Cara Penyampaian]",
-        "[Saran Perbaikan]",
-        "[Kesimpulan]",
-      ];
+    // Step 3: Generate Sekali Saja
+    const result = await geminiModel.generateContent(prompt);
+    const response = await result.response;
+    const text = await response.text();
 
-      const hasAllSections = requiredSections.every((section) =>
-        text.includes(section)
-      );
-      const hasScore = /Skor:\s*\d+\/100/.test(text);
+    // Step 4: Validasi Format
+    const requiredSections = [
+      "[Format dan Tata Letak]",
+      "[Kualitas Konten]",
+      "[Cara Penyampaian]",
+      "[Saran Perbaikan]",
+      "[Kesimpulan]",
+    ];
 
-      if (!hasAllSections || !hasScore) {
-        console.log("Response format invalid, retrying with same criteria...");
-        return await generatePdfReviewFromGemini(cvText);
-      }
+    const hasAllSections = requiredSections.every((section) =>
+      text.includes(section)
+    );
+    const hasScore = /Skor:\s*\d+\/100/.test(text);
 
-      // Clean up any potential inconsistencies in formatting
-      const cleanedText = text
-        .replace(/\n{3,}/g, "\n\n") // Remove excess newlines
-        .replace(/•\s+/g, "• ") // Standardize bullet points
-        .trim();
-
+    if (!hasAllSections || !hasScore) {
       return {
-        success: true,
-        analysis: cleanedText,
+        success: false,
+        error: "Hasil tidak sesuai format yang ditentukan",
+        analysis: text,
         ownerName: ownerName === "Unnamed" ? undefined : ownerName,
       };
-    } catch (error) {
-      console.error("Error in Gemini generation:", error);
-      throw error;
     }
+
+    const cleanedText = text
+      .replace(/\n{3,}/g, "\n\n")
+      .replace(/•\s+/g, "• ")
+      .trim();
+
+    return {
+      success: true,
+      analysis: cleanedText,
+      ownerName: ownerName === "Unnamed" ? undefined : ownerName,
+    };
   } catch (error) {
     console.error("Error analyzing CV:", error);
     return {
